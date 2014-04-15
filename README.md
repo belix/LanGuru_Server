@@ -10,3 +10,4 @@ LanGuru Server
 - Random Buchstaben generieren
   http://pastebin.com/Ma640uzE
 - Positionen bestimmen, wo Buchstaben bereits ausgefüllt sind
+  http://pastebin.com/jPX9zmfZ
