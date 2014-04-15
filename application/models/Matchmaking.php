@@ -115,8 +115,8 @@ class Application_Model_Matchmaking {
 				$gametype = rand(1, 3);
 				
 				// write back both users to match table
-				//$success = Application_Model_Match::createMatch($existingUser[0], $userdata['user'], $gametype);
-				$success = Application_Model_Match::createMatch($existingUser[0], $userdata['user'], 2);
+				$success = Application_Model_Match::createMatch($existingUser[0], $userdata['user'], $gametype);
+				//$success = Application_Model_Match::createMatch($existingUser[0], $userdata['user'], 2);
 				
 				// send match details back
 				$select2 = $dbMatch->getAdapter()->select()->from(array(

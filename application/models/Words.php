@@ -356,7 +356,8 @@ class Application_Model_Words {
 			}*/
 			
 			foreach ($correctWords as $key => $value) {
-				$correctWords[$key] = $value['id'];
+				$correctWords[$key][0] = $value['id'];
+				unset($correctWords[$key]['id']);
 			}
 			
 			return $correctWords;
@@ -402,7 +403,8 @@ class Application_Model_Words {
 			}*/
 			
 			foreach ($correctWords as $key => $value) {
-				$correctWords[$key] = $value['id'];
+				$correctWords[$key][0] = $value['id'];
+				unset($correctWords[$key]['id']);
 			}
 			
 			return $correctWords;
