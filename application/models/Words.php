@@ -5,7 +5,7 @@ class Application_Model_Words {
 	
 	// 1st Minigame - MultiplyChoice
 	
-	public static function retrieveWordsForMultiplyChoiceGame($foreignlang, $nativelang, $nativelang2) {
+	public static function retrieveWordsForMultiplyChoiceGame() {
 		
 		
 		// create 5 random ids for words
@@ -17,10 +17,10 @@ class Application_Model_Words {
 		if($nativelang != $nativelang2) {
 				$select = $db->getAdapter()->select()->from(array(
 			'words' => 'words'
-			),array('id','type',$foreignlang, $nativelang, $nativelang2))
+			),array('id','type'))
 			->where('category = ?', $category)
-			->where(new Zend_Db_Expr('CHAR_LENGTH(' . $nativelang .')<=10'))
-			->where(new Zend_Db_Expr('CHAR_LENGTH(' . $nativelang2 .')<=10'))
+			//->where(new Zend_Db_Expr('CHAR_LENGTH(' . $nativelang .')<=10'))
+			//->where(new Zend_Db_Expr('CHAR_LENGTH(' . $nativelang2 .')<=10'))
 			->order(new Zend_Db_Expr('RAND()'))
 			->limit(30,0);
 			
@@ -50,12 +50,12 @@ class Application_Model_Words {
 			// sql for the wrong words for type 1
 		if($countType1 > 0) {
 			$select2 = $db->getAdapter()->select()->from(array(
-				'words' => 'words'), array($nativelang, $nativelang2))
+				'words' => 'words'), array('id'))
 				->where('id NOT IN(?)',$ids)
 				->where('category = ?', $category)
 				->where('type = 1')
-				->where(new Zend_Db_Expr('CHAR_LENGTH(' . $nativelang .')<=10'))
-				->where(new Zend_Db_Expr('CHAR_LENGTH(' . $nativelang2 .')<=10'))
+				//->where(new Zend_Db_Expr('CHAR_LENGTH(' . $nativelang .')<=10'))
+				//->where(new Zend_Db_Expr('CHAR_LENGTH(' . $nativelang2 .')<=10'))
 				->order(new Zend_Db_Expr('RAND()'))
 				->limit(($countType1*3),0);	
 				
@@ -64,12 +64,12 @@ class Application_Model_Words {
 		
 		if($countType2 > 0) {
 			$select3 = $db->getAdapter()->select()->from(array(
-				'words' => 'words'), array($nativelang, $nativelang2))
+				'words' => 'words'), array('id'))
 				->where('id NOT IN(?)',$ids)
 				->where('category = ?', $category)
 				->where('type = 2')
-				->where(new Zend_Db_Expr('CHAR_LENGTH(' . $nativelang .')<=10'))
-				->where(new Zend_Db_Expr('CHAR_LENGTH(' . $nativelang2 .')<=10'))
+				//->where(new Zend_Db_Expr('CHAR_LENGTH(' . $nativelang .')<=10'))
+				//->where(new Zend_Db_Expr('CHAR_LENGTH(' . $nativelang2 .')<=10'))
 				->order(new Zend_Db_Expr('RAND()'))
 				->limit(($countType2*3),0);	
 				
@@ -78,12 +78,12 @@ class Application_Model_Words {
 		
 		if($countType3 > 0) {
 			$select4 = $db->getAdapter()->select()->from(array(
-				'words' => 'words'), array($nativelang, $nativelang2))
+				'words' => 'words'), array('id'))
 				->where('id NOT IN(?)',$ids)
 				->where('category = ?', $category)
 				->where('type = 3')
-				->where(new Zend_Db_Expr('CHAR_LENGTH(' . $nativelang .')<=10'))
-				->where(new Zend_Db_Expr('CHAR_LENGTH(' . $nativelang2 .')<=10'))
+				//->where(new Zend_Db_Expr('CHAR_LENGTH(' . $nativelang .')<=10'))
+				//->where(new Zend_Db_Expr('CHAR_LENGTH(' . $nativelang2 .')<=10'))
 				->order(new Zend_Db_Expr('RAND()'))
 				->limit(($countType3*3),0);	
 				
@@ -92,12 +92,12 @@ class Application_Model_Words {
 		
 		if($countType4 > 0) {
 			$select5 = $db->getAdapter()->select()->from(array(
-				'words' => 'words'), array($nativelang, $nativelang2))
+				'words' => 'words'), array('id'))
 				->where('id NOT IN(?)',$ids)
 				->where('category = ?', $category)
 				->where('type = 4')
-				->where(new Zend_Db_Expr('CHAR_LENGTH(' . $nativelang .')<=10'))
-				->where(new Zend_Db_Expr('CHAR_LENGTH(' . $nativelang2 .')<=10'))
+				//->where(new Zend_Db_Expr('CHAR_LENGTH(' . $nativelang .')<=10'))
+				//->where(new Zend_Db_Expr('CHAR_LENGTH(' . $nativelang2 .')<=10'))
 				->order(new Zend_Db_Expr('RAND()'))
 				->limit(($countType4*3),0);	
 				
@@ -147,9 +147,9 @@ class Application_Model_Words {
 		else {
 			$select = $db->getAdapter()->select()->from(array(
 			'words' => 'words'
-			),array('id','type',$foreignlang, $nativelang))
+			),array('id','type'))
 			->where('category = ?', $category)
-			->where(new Zend_Db_Expr('CHAR_LENGTH(' . $nativelang .')<=10'))
+			//->where(new Zend_Db_Expr('CHAR_LENGTH(' . $nativelang .')<=10'))
 			->order(new Zend_Db_Expr('RAND()'))
 			->limit(30,0);
 			
@@ -179,11 +179,11 @@ class Application_Model_Words {
 			// sql for the wrong words for type 1
 		if($countType1 > 0) {
 			$select2 = $db->getAdapter()->select()->from(array(
-				'words' => 'words'), array($nativelang))
+				'words' => 'words'), array('id'))
 				->where('id NOT IN(?)',$ids)
 				->where('category = ?', $category)
 				->where('type = 1')
-				->where(new Zend_Db_Expr('CHAR_LENGTH(' . $nativelang .')<=10'))
+				//->where(new Zend_Db_Expr('CHAR_LENGTH(' . $nativelang .')<=10'))
 				->order(new Zend_Db_Expr('RAND()'))
 				->limit(($countType1*3),0);	
 				
@@ -192,11 +192,11 @@ class Application_Model_Words {
 		
 		if($countType2 > 0) {
 			$select3 = $db->getAdapter()->select()->from(array(
-				'words' => 'words'), array($nativelang))
+				'words' => 'words'), array('id'))
 				->where('id NOT IN(?)',$ids)
 				->where('category = ?', $category)
 				->where('type = 2')
-				->where(new Zend_Db_Expr('CHAR_LENGTH(' . $nativelang .')<=10'))
+				//->where(new Zend_Db_Expr('CHAR_LENGTH(' . $nativelang .')<=10'))
 				->order(new Zend_Db_Expr('RAND()'))
 				->limit(($countType2*3),0);	
 				
@@ -205,11 +205,11 @@ class Application_Model_Words {
 		
 		if($countType3 > 0) {
 			$select4 = $db->getAdapter()->select()->from(array(
-				'words' => 'words'), array($nativelang))
+				'words' => 'words'), array('id'))
 				->where('id NOT IN(?)',$ids)
 				->where('category = ?', $category)
 				->where('type = 3')
-				->where(new Zend_Db_Expr('CHAR_LENGTH(' . $nativelang .')<=10'))
+				//->where(new Zend_Db_Expr('CHAR_LENGTH(' . $nativelang .')<=10'))
 				->order(new Zend_Db_Expr('RAND()'))
 				->limit(($countType3*3),0);	
 				
@@ -218,11 +218,11 @@ class Application_Model_Words {
 		
 		if($countType4 > 0) {
 			$select5 = $db->getAdapter()->select()->from(array(
-				'words' => 'words'), array($nativelang))
+				'words' => 'words'), array('id'))
 				->where('id NOT IN(?)',$ids)
 				->where('category = ?', $category)
 				->where('type = 4')
-				->where(new Zend_Db_Expr('CHAR_LENGTH(' . $nativelang .')<=10'))
+				//->where(new Zend_Db_Expr('CHAR_LENGTH(' . $nativelang .')<=10'))
 				->order(new Zend_Db_Expr('RAND()'))
 				->limit(($countType4*3),0);	
 				
@@ -269,8 +269,14 @@ class Application_Model_Words {
 		}
 
 		foreach ($allWords as $key => $value) {
-			unset($allWords[$key][0]['id']);
+			//unset($allWords[$key][0]['id']);
 			unset($allWords[$key][0]['type']);
+		}
+		
+		foreach ($allWords as $key => $value) {
+			foreach ($value as $keys => $values) {
+				$allWords[$key][$keys] = $values['id'];
+			}
 		}
 		
 		return $allWords;
@@ -287,7 +293,7 @@ class Application_Model_Words {
 		if($nativelang != $nativelang2) {
 				$select = $db->getAdapter()->select()->from(array(
 			'words' => 'words'
-			),array($foreignlang, $nativelang, $nativelang2))
+			),array('id'))
 			->where('category = ?', $category)
 			->where(new Zend_Db_Expr('CHAR_LENGTH(' . $nativelang .')<=10'))
 			->where(new Zend_Db_Expr('CHAR_LENGTH(' . $nativelang2 .')<=10'))			
@@ -299,7 +305,7 @@ class Application_Model_Words {
 			// generate random strings and put it into the array depending on the nativelanguage
 			// TODO: Länge des Strings bis dato auf UTF-8 optimiert, da sonst die Umlaute falsch berechnet werden, muss man evtl. bei anderen Sprachen anpassen.
 			// TODO: Generelles Sprachenproblem, die random Characters müssen abhängig von der Sprache generiert werden, da es in jeder Sprache andere Buchstaben gibt!
-			
+			/*
 			foreach ($correctWords as $key => $value) {
 				
 				if ($value[$nativelang]) {
@@ -347,7 +353,11 @@ class Application_Model_Words {
 							$correctWords[$key]['wrongchars' . $nativelang2] = $rand;
 						}
 				}
-			}	
+			}*/
+			
+			foreach ($correctWords as $key => $value) {
+				$correctWords[$key] = $value['id'];
+			}
 			
 			return $correctWords;
 			
@@ -356,7 +366,7 @@ class Application_Model_Words {
 		else {
 			$select = $db->getAdapter()->select()->from(array(
 			'words' => 'words'
-			),array($foreignlang, $nativelang))
+			),array('id'))
 			->where('category = ?', $category)
 			->where(new Zend_Db_Expr('CHAR_LENGTH(' . $nativelang .')<=10'))
 			->order(new Zend_Db_Expr('RAND()'))
@@ -367,6 +377,7 @@ class Application_Model_Words {
 			// generate random strings and put it into the array depending on the nativelanguage
 			// TODO: Länge des Strings bis dato auf UTF-8 optimiert, da sonst die Umlaute falsch berechnet werden, muss man evtl. bei anderen Sprachen anpassen.
 			// TODO: Generelles Sprachenproblem, die random Characters müssen abhängig von der Sprache generiert werden, da es in jeder Sprache andere Buchstaben gibt!
+			/*
 			foreach ($correctWords as $key => $value) {
 				if (mb_strlen($value[$nativelang], 'UTF-8') == 15)
 					$correctWords[$key]['wrongchars' . $nativelang] = "BOBSCHLUNDSTUDIOS";
@@ -388,7 +399,12 @@ class Application_Model_Words {
 					 	$correctWords[$key]['charpositions' . $nativelang] = $charPositions;
 						$correctWords[$key]['wrongchars' . $nativelang] = $rand;
 					}
-			}			
+			}*/
+			
+			foreach ($correctWords as $key => $value) {
+				$correctWords[$key] = $value['id'];
+			}
+			
 			return $correctWords;
 		}
 	}
@@ -405,7 +421,7 @@ class Application_Model_Words {
 		if($nativelang != $nativelang2) {
 				$select = $db->getAdapter()->select()->from(array(
 			'words' => 'words'
-			),array('id','type',$foreignlang, $nativelang, $nativelang2))
+			),array('id','type'))
 			->where('category = ?', $category)
 			->where(new Zend_Db_Expr('CHAR_LENGTH(' . $nativelang .')<=10'))
 			->where(new Zend_Db_Expr('CHAR_LENGTH(' . $nativelang2 .')<=10'))
@@ -435,11 +451,11 @@ class Application_Model_Words {
 						$countType4++;
 				}
 			}	
-			
+			Zend_Debug::dump($ids);
 			// sql for the wrong words for type 1
 		if($countType1 > 0) {
 			$select2 = $db->getAdapter()->select()->from(array(
-				'words' => 'words'), array($nativelang, $nativelang2))
+				'words' => 'words'), array('id'))
 				->where('id NOT IN(?)',$ids)
 				->where('category = ?', $category)
 				->where('type = 1')
@@ -453,7 +469,7 @@ class Application_Model_Words {
 		
 		if($countType2 > 0) {
 			$select3 = $db->getAdapter()->select()->from(array(
-				'words' => 'words'), array($nativelang, $nativelang2))
+				'words' => 'words'), array('id'))
 				->where('id NOT IN(?)',$ids)
 				->where('category = ?', $category)
 				->where('type = 2')
@@ -467,7 +483,7 @@ class Application_Model_Words {
 		
 		if($countType3 > 0) {
 			$select4 = $db->getAdapter()->select()->from(array(
-				'words' => 'words'), array($nativelang, $nativelang2))
+				'words' => 'words'), array('id'))
 				->where('id NOT IN(?)',$ids)
 				->where('category = ?', $category)
 				->where('type = 3')
@@ -481,7 +497,7 @@ class Application_Model_Words {
 		
 		if($countType4 > 0) {
 			$select5 = $db->getAdapter()->select()->from(array(
-				'words' => 'words'), array($nativelang, $nativelang2))
+				'words' => 'words'), array('id'))
 				->where('id NOT IN(?)',$ids)
 				->where('category = ?', $category)
 				->where('type = 4')
@@ -504,8 +520,7 @@ class Application_Model_Words {
 		for($i = 0; $i < 30; $i++) {
 			$currentType = $correctWords[$i]['type'];
 			
-			$correctWord = array($correctWords[$i]);
-			
+			$correctWord = array(array('id' => $correctWords[$i]['id']));
 			
 			switch ($currentType) {
 					case '1':
@@ -536,7 +551,7 @@ class Application_Model_Words {
 		else {
 			$select = $db->getAdapter()->select()->from(array(
 			'words' => 'words'
-			),array('id','type',$foreignlang, $nativelang))
+			),array('id','type'))
 			->where('category = ?', $category)
 			->where(new Zend_Db_Expr('CHAR_LENGTH(' . $nativelang .')<=10'))
 			->order(new Zend_Db_Expr('RAND()'))
@@ -570,7 +585,7 @@ class Application_Model_Words {
 			// sql for the wrong words for type 1
 		if($countType1 > 0) {
 			$select2 = $db->getAdapter()->select()->from(array(
-				'words' => 'words'), array($nativelang))
+				'words' => 'words'), array('id'))
 				->where('id NOT IN(?)',$ids)
 				->where('category = ?', $category)
 				->where('type = 1')
@@ -583,7 +598,7 @@ class Application_Model_Words {
 		
 		if($countType2 > 0) {
 			$select3 = $db->getAdapter()->select()->from(array(
-				'words' => 'words'), array($nativelang))
+				'words' => 'words'), array('id'))
 				->where('id NOT IN(?)',$ids)
 				->where('category = ?', $category)
 				->where('type = 2')
@@ -596,7 +611,7 @@ class Application_Model_Words {
 		
 		if($countType3 > 0) {
 			$select4 = $db->getAdapter()->select()->from(array(
-				'words' => 'words'), array($nativelang))
+				'words' => 'words'), array('id'))
 				->where('id NOT IN(?)',$ids)
 				->where('category = ?', $category)
 				->where('type = 3')			
@@ -609,7 +624,7 @@ class Application_Model_Words {
 		
 		if($countType4 > 0) {
 			$select5 = $db->getAdapter()->select()->from(array(
-				'words' => 'words'), array($nativelang))
+				'words' => 'words'), array('id'))
 				->where('id NOT IN(?)',$ids)
 				->where('category = ?', $category)
 				->where('type = 4')
@@ -631,7 +646,7 @@ class Application_Model_Words {
 		for($i = 0; $i < 30; $i++) {
 			$currentType = $correctWords[$i]['type'];
 			
-			$correctWord = array($correctWords[$i]);
+			$correctWord = array(array('id' => $correctWords[$i]['id']));
 			
 			
 			switch ($currentType) {
@@ -664,12 +679,7 @@ class Application_Model_Words {
 			$value[] = rand(1, 10);
 			$matrix[] = $value;
 		}
-		
-		foreach ($matrix as $key => $value) {
-			unset($matrix[$key][0]['id']);
-			unset($matrix[$key][0]['type']);
-		}
-		
+
 		return $matrix;
 			
 	}

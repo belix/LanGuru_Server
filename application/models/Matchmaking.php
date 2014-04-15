@@ -27,7 +27,7 @@ class Application_Model_Matchmaking {
 				// first retrieve list of words depending on the gametype
 				switch ($matchAlreadyExistsForThisUser[0]['gametype']) {
 					case 1:
-						$listOfWords = Application_Model_Words::retrieveWordsForMultiplyChoiceGame($matchAlreadyExistsForThisUser[0]['foreignlang'], $matchAlreadyExistsForThisUser[0]['nativelang1'], $matchAlreadyExistsForThisUser[0]['nativelang2']);
+						$listOfWords = Application_Model_Words::retrieveWordsForMultiplyChoiceGame();
 						break;
 						
 					case 2:
@@ -135,7 +135,7 @@ class Application_Model_Matchmaking {
 					// first retrieve list of words depending on gametype
 					switch ($matchAlreadyExistsForThisUser[0]['gametype']) {
 						case 1:
-							$listOfWords = Application_Model_Words::retrieveWordsForMultiplyChoiceGame($matchAlreadyExistsForThisUser[0]['foreignlang'], $matchAlreadyExistsForThisUser[0]['nativelang1'], $matchAlreadyExistsForThisUser[0]['nativelang2']);
+							$listOfWords = Application_Model_Words::retrieveWordsForMultiplyChoiceGame();
 							break;
 							
 						case 2:

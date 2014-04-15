@@ -162,87 +162,11 @@ class MatchmakingController extends Zend_Controller_Action
 	}
 	
 	public function testAction() {
-		
-		$path = "https://www.youtube.com/annotations_invideo?features=1&legacy=1&video_id=k009d7bmkOc";
-		
-		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL,$path);
-		curl_setopt($ch, CURLOPT_FAILONERROR,1);
-		curl_setopt($ch, CURLOPT_FOLLOWLOCATION,1);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
-		curl_setopt($ch, CURLOPT_TIMEOUT, 15);
-		$retValue = htmlspecialchars(curl_exec($ch));			 
-		curl_close($ch);
 
-		$retValue = str_replace("amp;", "", $retValue);
-		echo "<pre>";
-		echo $retValue;
-		echo "</pre>";
-		//Zend_Debug::dump($retValue);
-		
-		/*$array = array('0' => '1405521504', '1' => '1279436137');
-		$test = Application_Model_Mmatch::getFriendDetails($array);
-		
+		$test = Application_Model_Words::retrieveWordsForMatrixGame('EN', 'DE', 'DE');
+
 		Zend_Debug::dump($test);
 
-		$test = Application_Model_Words::retrieveWordsForWordCompletion('EN', 'DE', 'FR');
-
-		Zend_Debug::dump($test);*/
-		/*$bla[0] = array_rand(array_fill(1, 10, true), 1);
-		Zend_Debug::dump($bla);*/
-		
-		/*$to_be_translated = "apple";
-		
-		$request = 'https://www.googleapis.com/language/translate/v2?key=&source=en&target=es&q='.$to_be_translated;
-		$response = file_get_contents($request); Zend_Debug::dump($response);
-		$data = json_decode($response); Zend_Debug::dump($data);
-		$translated = $data->translations->translatedText;*/
-		
-		//$path = "https://www.youtube.com/my_videos_annotate?v=35XbHN7CNBY";
-		
-		/*$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL,$path);
-		curl_setopt($ch, CURLOPT_FAILONERROR,1);
-		curl_setopt($ch, CURLOPT_FOLLOWLOCATION,1);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-		curl_setopt($ch, CURLOPT_TIMEOUT, 15);
-		$retValue = curl_exec($ch);			 
-		curl_close($ch);*/
-		//return $retValue;
-		//$retValue = str_replace("amp;", "", $retValue);
-		//$val = substr($retValue, 65);
-		/*
-		$ch = curl_init();    
-curl_setopt($ch, CURLOPT_URL, $path); // set url
-curl_setopt($ch, CURLOPT_FAILONERROR,1);
-		curl_setopt($ch, CURLOPT_FOLLOWLOCATION,1);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-		curl_setopt($ch, CURLOPT_TIMEOUT, 15);
-curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);  
-curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.6) Gecko/20070725 Firefox/2.0.0.6"); // set browser/user agent    
-//curl_setopt($ch, CURLOPT_HEADERFUNCTION, 'read_header'); // get header
-$retValue = curl_exec($ch);
-
-		//echo "<pre>";
-		Zend_Debug::dump($retValue);*/
-		//echo "</pre>";
-		
-		//Zend_Debug::dump($retValue);
-		
-		//echo json_encode($matrix);
-		
-		//Zend_Debug::dump(json_encode($matrix));
-		//srand(5);
-		// set seed
-		//self::seed(42);
-		
-		// echo 10 numbers between 1 and 100
-		//for ($i = 0; $i < 10; $i++) {
-			//echo self::num(1, 100) . '<br />';
-		//}
-		//Zend_Debug::dump($matrix);
 	} 
 	
 	

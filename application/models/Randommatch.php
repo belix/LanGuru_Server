@@ -108,7 +108,7 @@ class Application_Model_Randommatch {
 				// logic for creating the list of words
 					
 				// first retrieve list of words
-				$listOfWords = Application_Model_Words::retrieveWordsForMultiplyChoiceGame($matchdata['foreignlang'], $user2[0]['nativelang'], $matchdata['nativelang']);
+				$listOfWords = Application_Model_Words::retrieveWordsForMultiplyChoiceGame();
 				// TO DO: then write back the words to file, so both players get the same words
 				Application_Model_Helper::createFileForMatch($id, json_encode($listOfWords), 2);
 			}
