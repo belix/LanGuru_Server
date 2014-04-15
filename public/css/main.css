@@ -1,0 +1,86 @@
+* {
+	margin:0px;
+	padding:0px;
+}
+
+html, body {
+	height: 100%;
+	 font-family: 'Source Sans Pro', sans-serif;
+  	font-size: 13px;
+}
+
+.nosize { width: 0px; height: 0px;}
+.centered {top: 50%; left:50%;}
+.dp {display:none;}
+.pa {position: absolute;}
+
+.mt25 { margin-top:25px;}
+.mt3 { margin-top:3px;}
+.mt10 { margin-top:10px;}
+.pd5 { padding: 5px;}
+.pl {position: relative;}
+/* Main Stuff / Startpage */
+
+.inline {float: left;}
+.opac { opacity: 0.75 !important;}
+.zeroOpac {opacity: 0;}
+.cb {clear:both;}
+.mr10 {margin-right: 10px;}
+.ml10 {margin-left: 10px;}
+.ml14 {margin-left: 14px;}
+
+#wrapper {
+  background: none;
+  min-height: 100%;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+
+#main {
+  margin: 0 auto;
+  overflow: hidden;
+  position: relative;
+  width: 1020px;
+  display: block;
+}
+
+#header {
+	position: relative;
+	height: 100px;
+	width: auto;
+	border-bottom: 3px solid black;
+}
+
+#navigation {
+	
+	height: 40px;
+	background-color: black;
+}
+#navigation ul {
+	display: inline;
+}
+
+#navigation ul li {
+	position: relative;
+	top: 10px;
+	padding: 10px 20px;
+	list-style-type: none;
+	display: inline;
+	background-color: black;
+	color: white;
+	height: auto;
+	height: 38px;
+}
+
+#navigation ul li:hover {
+	cursor: pointer;
+	color: black;
+	background-color: white;
+}
+
+#header h2 {
+	position: relative;
+	top: 35px;
+	left: 35px;
+}

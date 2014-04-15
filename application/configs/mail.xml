@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>    
+<configdata>     
+	 <info>      
+		<host>smtp.photodil.de</host>
+		<from>no-reply@photodil.de</from> 
+		<fromname>no-reply@photodil.de</fromname> 
+		<username>no-reply@photodil.de</username>
+		<password>FYJm7YYJ7Je67ekc</password> 
+		<port>25</port>     
+		<ssl>TLS</ssl>
+		<portSSL>465</portSSL> 
+		<auth>login</auth>   
+		<charset>UTF-8</charset>  		    
+	 </info>
+	 <montage>      
+		<host>smtp.photodil.de</host>
+		<from>montage@photodil.de</from> 
+		<fromname>montage@photodil.de</fromname> 
+		<username>montage@photodil.de</username>
+		<password>XqotPbSeG2UBwQHm</password> 
+		<port>25</port>     
+		<ssl>TLS</ssl>
+		<portSSL>465</portSSL> 
+		<auth>login</auth>   
+		<charset>UTF-8</charset>  		    
+	 </montage>
+</configdata>

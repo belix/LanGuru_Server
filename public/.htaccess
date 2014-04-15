@@ -1,0 +1,19 @@
+AddDefaultCharset UTF-8
+Header set X-UA-Compatible "IE=Edge,chrome=1"
+
+php_value max_execution_time 259200
+
+RewriteEngine on
+RewriteBase /
+
+RewriteCond %{HTTP_HOST} !^chaoshennen\.de$ [NC]
+RewriteRule ^(.*)$ http://chaoshennen.de/$1 [R=301,L]
+
+RewriteCond %{HTTP:Accept-Language} !(de) [NC]
+RewriteRule ^$ http://www.chaoshennen.de/en/  [L]
+
+RewriteCond %{REQUEST_FILENAME} -s [OR]
+RewriteCond %{REQUEST_FILENAME} -l [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^.*$ - [NC,L]
+RewriteRule ^.*$ index.php [NC,L]
