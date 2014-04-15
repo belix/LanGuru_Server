@@ -302,59 +302,6 @@ class Application_Model_Words {
 			
 			$correctWords = $select->query()->fetchAll();
 			
-			// generate random strings and put it into the array depending on the nativelanguage
-			// TODO: Länge des Strings bis dato auf UTF-8 optimiert, da sonst die Umlaute falsch berechnet werden, muss man evtl. bei anderen Sprachen anpassen.
-			// TODO: Generelles Sprachenproblem, die random Characters müssen abhängig von der Sprache generiert werden, da es in jeder Sprache andere Buchstaben gibt!
-			/*
-			foreach ($correctWords as $key => $value) {
-				
-				if ($value[$nativelang]) {
-					if (mb_strlen($value[$nativelang], 'UTF-8') == 15)
-						$correctWords[$key]['wrongchars' . $nativelang] = "BOBSCHLUNDSTUDIOS";
-					else {
-							$charCount = mb_strlen($value[$nativelang], 'UTF-8');
-							$calc = floor(0.4 * $charCount);
-							
-							$getDifference = 15 - $charCount;
-							$seed = str_split('abcdefghijklmnopqrstuvwxyz'); // and any other characters
-						    shuffle($seed); // probably optional since array_is randomized; this may be redundant
-						    $rand = '';
-						    foreach (array_rand($seed, $getDifference) as $k) $rand .= $seed[$k];
-						 	
-							if ($calc > 1)
-								$charPositions = array_rand(array_fill(1, $charCount, true), $calc);
-							else
-								$charPositions[0] = array_rand(array_fill(1, $charCount, true), $calc);
-						
-					 		$correctWords[$key]['charpositions' . $nativelang] = $charPositions;
-							$correctWords[$key]['wrongchars' . $nativelang] = $rand;
-						}
-				} 
-				if ($value[$nativelang2]) {
-				
-					if (mb_strlen($value[$nativelang2], 'UTF-8') == 15)
-						$correctWords[$key]['wrongchars2' . $nativelang2] = "BOBSCHLUNDSTUDIOS";
-					else {
-							$charCount = mb_strlen($value[$nativelang], 'UTF-8');
-							$calc = floor(0.4 * $charCount);
-							
-							$getDifference = 15 - $charCount;
-							$seed = str_split('abcdefghijklmnopqrstuvwxyz'); // and any other characters
-						    shuffle($seed); // probably optional since array_is randomized; this may be redundant
-						    $rand = '';
-						    foreach (array_rand($seed, $getDifference) as $k) $rand .= $seed[$k];
-							
-							if ($calc > 1)
-								$charPositions = array_rand(array_fill(1, $charCount, true), $calc);
-							else
-								$charPositions[0] = array_rand(array_fill(1, $charCount, true), $calc);
-						
-					 		$correctWords[$key]['charpositions' . $nativelang2] = $charPositions;
-							$correctWords[$key]['wrongchars' . $nativelang2] = $rand;
-						}
-				}
-			}*/
-			
 			foreach ($correctWords as $key => $value) {
 				$correctWords[$key][0] = $value['id'];
 				unset($correctWords[$key]['id']);
@@ -374,33 +321,6 @@ class Application_Model_Words {
 			->limit(30,0);
 			
 			$correctWords = $select->query()->fetchAll();
-			
-			// generate random strings and put it into the array depending on the nativelanguage
-			// TODO: Länge des Strings bis dato auf UTF-8 optimiert, da sonst die Umlaute falsch berechnet werden, muss man evtl. bei anderen Sprachen anpassen.
-			// TODO: Generelles Sprachenproblem, die random Characters müssen abhängig von der Sprache generiert werden, da es in jeder Sprache andere Buchstaben gibt!
-			/*
-			foreach ($correctWords as $key => $value) {
-				if (mb_strlen($value[$nativelang], 'UTF-8') == 15)
-					$correctWords[$key]['wrongchars' . $nativelang] = "BOBSCHLUNDSTUDIOS";
-				else {
-						$charCount = mb_strlen($value[$nativelang], 'UTF-8');
-						$calc = floor(0.4 * $charCount);
-
-						$getDifference = 15 - $charCount;
-						$seed = str_split('abcdefghijklmnopqrstuvwxyz'); // and any other characters
-					    shuffle($seed); // probably optional since array_is randomized; this may be redundant
-					    $rand = '';
-					    foreach (array_rand($seed, $getDifference) as $k) $rand .= $seed[$k];
-						
-						if ($calc > 1)
-							$charPositions = array_rand(array_fill(1, $charCount, true), $calc);
-						else
-							$charPositions[0] = array_rand(array_fill(1, $charCount, true), $calc);
-						
-					 	$correctWords[$key]['charpositions' . $nativelang] = $charPositions;
-						$correctWords[$key]['wrongchars' . $nativelang] = $rand;
-					}
-			}*/
 			
 			foreach ($correctWords as $key => $value) {
 				$correctWords[$key][0] = $value['id'];

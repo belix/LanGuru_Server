@@ -163,7 +163,7 @@ class MatchmakingController extends Zend_Controller_Action
 	
 	public function testAction() {
 
-		$test = Application_Model_Words::retrieveWordsForMatrixGame('EN', 'DE', 'DE');
+		$test = Application_Model_Words::retrieveWordsForWordCompletion('EN', 'DE', 'DE');
 
 		Zend_Debug::dump($test);
 
