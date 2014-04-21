@@ -158,6 +158,21 @@ class Application_Model_User {
 		
 		
 	}
+	
+	public static function getFriendInfos($array) {
+		$db = new Application_Model_DbTable_User();
+		
+		$select = $db->getAdapter()->select()->from(array(
+			'user' => 'user',
+		), array('userid' => 'id', 'username', 'fbid', 'ranking', 'nativelang', 'foreignlang'))
+		->where('username = ?', $array['username'])
+		;
+									
+		$result = $select->query()->fetchAll();
+		
+		return $result ? Zend_Json::encode(array('userdetails' => $result)) : "dberror-could-not-retrieve-userdetails";
+				
+	}
 }
 
 ?>

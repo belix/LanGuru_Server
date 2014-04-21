@@ -20,32 +20,40 @@ class Application_Model_Randommatch {
 		->where('level=?', $matchdata['level'])
 		->where('ranking > ?', $matchdata['ranking']-100)
 		->where('ranking < ?', $matchdata['ranking']+100)
+		->where('user_id NOT IN (?)', $matchdata['user_id'])
 		;
 		
 		$result = $select->query()->fetchAll();
 		
+		$user_info = $db->getAdapter()->select()->from(array(
+			'randommatch' => 'randommatch'
+		), array('count' => 'count(*)'))
+		->where('user_id = ?', $matchdata['user_id'])
+		;
+		
+		$entry_count = $user_info->query()->fetchAll();
+
 		// check if possible opponent exists
-		if ($result == NULL) {
-			// if no opponent in table, write user data to table
+		if ($result == NULL && $entry_count[0]['count'] <= 8) {
+
+			// if no opponent in table, write user data to randommatch table
 			$row = $db->createRow();
 			
+			$row->match_id = 0;
 			$row->user_id = $matchdata['user_id'];
 			$row->foreign_language = $matchdata['foreignlang'];
 			$row->level = $matchdata['level'];
 			$row->ranking = $matchdata['ranking'];
 			
-			if (!($row->save()))
-				$error ++;
 			
-			return $error ? "dberror-randomMatch" : "success";
+			try {
+			    $row->save();
+			} catch (Exception $e){
+			    $error = $e->getMessage();
+			}
 			
-		} else {
-			// if opponent exists, do THAT
+			$randomID = $row->id;
 			
-			$randomOpponent = array_rand($result);
-			
-			// get user Details of opponent and user
-			// START: RECEIVE USER DATA
 			// get Username of requesting User
 			$select = $dbUser->getAdapter()->select()->from(array(
 				'user' => 'user', array('username')
@@ -53,26 +61,16 @@ class Application_Model_Randommatch {
 			->where('id = ?', $matchdata['user_id'])
 			;
 			
-			// get Username of User who is currently in database
-			$select2 = $dbUser->getAdapter()->select()->from(array(
-				'user' => 'user', array('username', 'nativelang', 'devicetoken')
-			))
-			->where('id = ?', $result[$randomOpponent]['user_id'])
-			;
-			
 			$user1 = $select->query()->fetchAll();
-			$user2 = $select2->query()->fetchAll();
 			
 			$username1 = $user1[0]['username'];
-			$username2 = $user2[0]['username'];
-			// END: RECEIVE USER DATA
 			
-			// START: SAVE MATCH
+			// save match details in mmatch table
 			$date = date("y-m-d");
 			$row = $dbMmatch->createRow();
 			
-			$row->opponent1 = $username2;
-			$row->nativelang1 = $user2[0]['nativelang'];
+			$row->opponent1 = "zufälliger Gegner";
+			$row->nativelang1 = "";
 			$row->opponent2 = $username1;
 			$row->nativelang2 = $matchdata['nativelang'];
 			$row->foreignlang = $matchdata['foreignlang'];
@@ -80,27 +78,41 @@ class Application_Model_Randommatch {
 			$row->aborted = 0;
 			$row->active = 1;
 			$row->startdate = $date;
-	
-			if (!($id = $row->save()))
-				$error ++;
+				
+			try {
+			    $row->save();
+			} catch (Exception $e){
+			    $error = $e->getMessage();
+			}
 			
-			// END: SAVE MATCH
-			
-			// START: SAVE FB IDs TO ACTIVEMMATCHES TABLE
+			// save match ID
+			$id = $row->id;
+						
+			// save matchID and userID of first player in active matches table
 			$rows = $dbActiveMatches->createRow();
 			
 			$rows->match_id = $id;
 			$rows->user_id1 = $matchdata['user_id'];
-			$rows->user_id2 = $result[$randomOpponent]['user_id'];
+			$rows->user_id2 = "";
 			
-			if (!$rows->save())
-				$error ++;
-			// END: SAVE User IDs TO ACTIVEMMATCHES TABLE
+			try {
+			    $rows->save();
+			} catch (Exception $e){
+			    $error = $e->getMessage();
+			}
 			
-			// delete entry in randomMatch		
-			$where = $db->getAdapter()->quoteInto('user_id=?', $result[$randomOpponent]['user_id']);
-    	  	if (!$db->delete($where))
-      			$error ++;
+			// set matchID in randommatch table
+			$data = array(
+				'match_id' => $id
+			);
+					
+			$where = $db->getAdapter()->quoteInto('id = ?', $randomID);
+			
+			try {
+			    $db->update($data, $where);
+			} catch (Exception $e){
+			    $error = $e->getMessage();
+			}
 			
 			// retrieve the words for this match
 			// check if file already exists (should never be the case because match id is unique at the moment you accept the request)
@@ -113,8 +125,52 @@ class Application_Model_Randommatch {
 				Application_Model_Helper::createFileForMatch($id, json_encode($listOfWords), 2);
 			}
 			
-			sendPush($user2[0]['devicetoken'], $username1 . ' fordert dich zu einem Match heraus. Schlund?');
-			return $error ? "dberror-randpmMatch" : "success";
+			return $error ? $error : "success";
+			
+		} else {
+			// if possible opponents exist, do THAT
+			
+			// fetch random match from result array
+			$randomOpponent = array_rand($result);
+			
+			// START: RECEIVE USER DATA
+			
+			// get Username of User who matched with a random match
+			$select2 = $dbUser->getAdapter()->select()->from(array(
+				'user' => 'user', array('username', 'nativelang', 'devicetoken')
+			))
+			->where('id = ?', $matchdata['user_id'])
+			;
+			
+			$user2 = $select2->query()->fetchAll();
+			
+			$username2 = $user2[0]['username'];
+			// END: RECEIVE USER DATA
+			
+			// update matched match with second username and nativelang
+			
+			$data = array(
+				'opponent1' => $username2,
+				'nativelang1' => $matchdata['nativelang']
+			);
+					
+			$where = $dbMmatch->getAdapter()->quoteInto('id = ?', $result[$randomOpponent]['match_id']);
+			
+			try {
+			    $dbMmatch->update($data, $where);
+			} catch (Exception $e){
+			    $error = $e->getMessage();
+			}
+
+			// delete entry in randomMatch		
+			$where = $db->getAdapter()->quoteInto('match_id=?', $result[$randomOpponent]['match_id']);
+			try {
+			    $db->delete($where);
+			} catch (Exception $e){
+			    $error = $e->getMessage();
+			}
+
+			return $error ? $error : "success";
 		}
 	}
 }

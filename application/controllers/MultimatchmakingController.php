@@ -153,6 +153,29 @@ class MultimatchmakingController extends Zend_Controller_Action
 
 	}
 	
+	public function searchFriendsAction() {
+		$request = $this->getRequest();
+			
+			
+		if ($request->isPost()) {
+			// get the json raw data
+			$handle = fopen("php://input", "rb");
+			$http_raw_post_data = '';
+			
+			while (!feof($handle)) {
+			    $http_raw_post_data .= fread($handle, 8192);
+			}
+			fclose($handle); 
+			
+			// convert it to a php array
+			$json_data = json_decode($http_raw_post_data, true);
+			$error = Application_Model_User::getFriendInfos($json_data);
+			
+			echo $error;
+		}
+
+	}
+	
 	public function finishRoundAction() {
 		$request = $this->getRequest();
 			
@@ -221,12 +244,10 @@ class MultimatchmakingController extends Zend_Controller_Action
 	}
 	
 	public function testAction(){
-		$shop = array( array("rose", 1.25 , 15),
-               array("daisy", 0.75 , 25),
-             ); 
-		
-		Zend_Debug::dump($shop);
-		Zend_Debug::dump(array_rand($shop));	
+			$array['username'] = "Bob Schlund";
+			$test = Application_Model_User::getFriendInfos($array);
+			
+			Zend_Debug::dump($test);
 			
 		}
 		

@@ -373,7 +373,6 @@ class Application_Model_Words {
 						$countType4++;
 				}
 			}	
-			Zend_Debug::dump($ids);
 			// sql for the wrong words for type 1
 		if($countType1 > 0) {
 			$select2 = $db->getAdapter()->select()->from(array(
@@ -594,6 +593,12 @@ class Application_Model_Words {
 			 
 			
 		}
+		}
+
+		foreach ($allWords as $key => $value) {
+			foreach ($value as $keys => $values) {
+				$allWords[$key][$keys] = $values['id'];
+			}
 		}
 		
 		// iterate through array and add a random number to each wordpair

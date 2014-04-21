@@ -127,64 +127,22 @@ class Application_Model_Mmatch {
 	
 	public static function getWordsForMatch($matchdata) {
 		$db = new Application_Model_DbTable_Mmatch();
-		$dbUser = new Application_Model_DbTable_User();
 		
 		// get rankings of both users and write back to match table 
 		$select = $db->getAdapter()->select()->from(array(
-		'mmatch' => 'mmatch'
+			'mmatch' => 'mmatch'
 		))
 		->where('id = ?', $matchdata['id'])
 		;
 		
-		$result = $select->query()->fetchAll();
+		$result = $select->query()->fetchAll();		
 		
-		// get ranking for user 1
-		$select2 = $dbUser->getAdapter()->select()->from(array(
-		'user' => 'user', array('ranking')
-		))
-		->where('username = ?', $matchdata['user1'])
-		;
-		
-		$userData1 = $select2->query()->fetchAll();
-		
-		$result[0]['ranking1'] = $userData1[0]['ranking'];
-		
-		// get ranking for user 2
-		$select3 = $dbUser->getAdapter()->select()->from(array(
-		'user' => 'user', array('ranking')
-		))
-		->where('username = ?', $matchdata['user2'])
-		;
-		
-		$userData2 = $select3->query()->fetchAll();
-		
-		$result[0]['ranking2'] = $userData2[0]['ranking'];
-		
-		
-		$words = Application_Model_Helper::readFromFile($result[0]['id'], 2);
+		$words = Application_Model_Helper::readFromFile($matchdata['id'], 2);
 		$words = json_decode($words);
-			
-		// check if opponent1 or opponent2 (and only do so, if the opponents have different nativelanguages)
-		if($result[0]['nativelang2'] != $result[0]['nativelang1']) {
-			if($result[0]['opponent1'] == $matchdata['user']) {
-				$removableKeyFromWordlist = $result[0]['nativelang2'];
-			}
-			else {
-				$removableKeyFromWordlist = $result[0]['nativelang1'];
-			}
-			
-			// eliminate language, which is not needed from the array
-			$newWords = Application_Model_Helper::eliminateKeyFromArray($removableKeyFromWordlist, $words);
-				
-			$result[0]['words'] = $newWords;
-			
-			return $result ? Zend_Json::encode(array('match' => $result[0])) : "dberror-could-not-retrieve-words";
-		}
+
+		$result[0]['words'] = $words;
 		
-		else {
-			$result[0]['words'] = $words;
-			return $result ? Zend_Json::encode(array('match' => $result[0])) : "dberror-could-not-retrieve-words";
-		}
+		return $result ? Zend_Json::encode(array('match' => $result[0])) : "dberror-could-not-retrieve-words";
 	
 	}
 	// function to delete the match in the mmatch table if user declines request by other user
