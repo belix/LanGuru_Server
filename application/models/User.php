@@ -27,6 +27,39 @@ class Application_Model_User {
 		
 	}
 	
+	public static function savePictures($userData) {
+		$db = new Application_Model_DbTable_User();
+		
+		$data = array(
+			'coverpic' => $userData['coverpic'],
+			'profilepic' => $userData['profilepic']
+		);
+				
+		$where = $db->getAdapter()->quoteInto('id = ?', $userData['userid']);
+		 
+		if(!$db->update($data, $where))
+			$error++;					
+		
+		return $error ? "dberror-savepictures-error" : "success-savepictures";
+	}
+	
+	public static function getPictures($userData) {
+		$db = new Application_Model_DbTable_User();
+		
+		$select = $db->getAdapter()->select()->from(array(
+			'user' => 'user'
+		), array('coverpic'))
+		->where('id=?', $userData['userid'])
+		;
+		
+		$result = $select->query()->fetchAll();
+		
+		return $result ? Zend_Json::encode($result[0]) : "dberror-getPictures";
+		
+		
+	}
+
+		
 	public static function loginUser($logindata) {
 				
 		$db = new Application_Model_DbTable_User();
@@ -172,6 +205,17 @@ class Application_Model_User {
 		
 		return $result ? Zend_Json::encode(array('userdetails' => $result)) : "dberror-could-not-retrieve-userdetails";
 				
+	}
+	
+	public static function addUser() {
+		$db = new Application_Model_DbTable_User();
+		
+		$row = $db->createRow();
+		
+		$row->username = 'harikiri';
+		
+		if (!$row->save())
+			$error ++;
 	}
 }
 

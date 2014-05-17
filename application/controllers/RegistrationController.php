@@ -304,6 +304,51 @@ class RegistrationController extends Zend_Controller_Action
 				 
 			}
 	}
+	
+	public function getPicturesAction() {
+		$request = $this->getRequest();
+			
+			
+			if ($request->isPost()) {
+				
+				
+				// get the json raw data
+				$handle = fopen("php://input", "rb");
+				$http_raw_post_data = '';
+				
+				while (!feof($handle)) {
+				    $http_raw_post_data .= fread($handle, 8192);
+				}
+				fclose($handle); 
+				
+				// convert it to a php array
+				$json_data = json_decode($http_raw_post_data, true);
+				
+				//echo json_encode($json_data);
+				
+				if (is_array($json_data)) {
+					// convert it back to json
+					
+					// write the user back to database
+					$changed = Application_Model_User::getPictures($json_data);
+					
+					echo $changed;
+					
+				}
+				 
+				 
+			}
+	}
+	
+	public function testAction() {
+		
+									Application_Model_User::addUser();
+				
+				
+				 
+				 
+		
+	}
 
 	
 }

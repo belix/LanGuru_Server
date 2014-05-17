@@ -19,11 +19,17 @@ class IndexController extends Zend_Controller_Action
 			$this->_helper->layout()->disableLayout();
 			$this->_helper->viewRenderer->setNoRender(true);
 
-			if ($this->_request->isGet()) {
-				$userModel = new Application_Model_User();
-				$return = $userModel::getAllUsers();
-				echo Zend_Json::encode(array('allUsers' => $return));
-			}
+			$db = new Application_Model_DbTable_User();
+		
+		$select = $db->getAdapter()->select()->from(array(
+			'user' => 'user'
+		))
+		->where('id=?', '13')
+		;
+		
+		$result = $select->query()->fetchAll();
+		
+		Zend_Debug::dump($result[0]);
 	}
 
 

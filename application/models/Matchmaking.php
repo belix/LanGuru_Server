@@ -61,32 +61,40 @@ class Application_Model_Matchmaking {
 			;
 			
 			$matchdata = $select3->query()->fetchAll();
-			// check if opponent1 or opponent2 (and only do so, if the opponents have different nativelanguages)
-				if($matchdata[0]['nativelang2'] != $matchdata[0]['nativelang1']) {
-					if($matchdata[0]['opponent1'] == $userdata['user']['username']) {
-						$removableKeyFromWordlist = $matchdata[0]['nativelang2'];
-					}
-					else {
-						$removableKeyFromWordlist = $matchdata[0]['nativelang1'];
-					}
+			
+			// START: Retrieve coverpic from opponent
+			if($matchdata[0]['opponent1'] != $userdata['user']['username']) {
+				// retrieve coverpic for opponent
+				$dbUser = new Application_Model_DbTable_User();
+				$select5 = $dbUser->getAdapter()->select()->from(array(
+				'user' => 'user'
+				))
+				->where('user.username = ?',$matchdata[0]['opponent1'] )
+				;
+			}
+			
+			else {
+				// retrieve coverpic for opponent
+				$dbUser = new Application_Model_DbTable_User();
+				$select5 = $dbUser->getAdapter()->select()->from(array(
+				'user' => 'user'
+				))
+				->where('user.username = ?',$matchdata[0]['opponent2'] )
+				;
+			}
+			
+			$coverpic = $select5->query()->fetchAll();
+			
+			// END: Retrieve Coverpic from opponent
+			
+			$matchAlreadyExistsForThisUser[0]['category'] = 0;
+			$matchAlreadyExistsForThisUser[0]['coverpic'] = $coverpic[0]['coverpic'];
+			$matchAlreadyExistsForThisUser[0]['profilepic'] = $coverpic[0]['profilepic'];
+			
+			$matchAlreadyExistsForThisUser[0]['words'] = $words;
 					
-					// eliminate language, which is not needed from the array
-					$newWords = Application_Model_Helper::eliminateKeyFromArray($removableKeyFromWordlist, $words);
-					
-					// TO-DO: send only the language which is neccessary, not both!!! too much overhead!
-					$matchAlreadyExistsForThisUser[0]['category'] = 0;
-					$matchAlreadyExistsForThisUser[0]['words'] = $newWords;
-					
-					return $matchAlreadyExistsForThisUser ? Zend_Json::encode(array('match' => $matchAlreadyExistsForThisUser[0])) : "dberror1";
-				}
-
-				else {
-					// TO-DO: send only the language which is neccessary, not both!!! too much overhead!
-					$matchAlreadyExistsForThisUser[0]['category'] = 0;
-					$matchAlreadyExistsForThisUser[0]['words'] = $words;
-					
-					return $matchAlreadyExistsForThisUser ? Zend_Json::encode(array('match' => $matchAlreadyExistsForThisUser[0])) : "dberror1";
-				}
+			return $matchAlreadyExistsForThisUser ? Zend_Json::encode(array('match' => $matchAlreadyExistsForThisUser[0])) : "dberror1";
+				
 			
 		}
 		
@@ -168,34 +176,26 @@ class Application_Model_Matchmaking {
 				;
 				
 				$matchdata = $select3->query()->fetchAll();
-				// check if opponent1 or opponent2 (and only do so, if the opponents have different nativelanguages)
-				if($matchdata[0]['nativelang2'] != $matchdata[0]['nativelang1']) {
-					// check if opponent1 or opponent2
-					if($matchdata[0]['opponent1'] == $userdata['user']['username']) {
-						$removableKeyFromWordlist = $matchdata[0]['nativelang2'];
-					}
-					else {
-						$removableKeyFromWordlist = $matchdata[0]['nativelang1'];
-					}
-					
-					// eliminate language, which is not needed from the array
-					$newWords = Application_Model_Helper::eliminateKeyFromArray($removableKeyFromWordlist, $words);
-					
-					// send match data back
-					$matchAlreadyExistsForThisUser[0]['category'] = 0;
-					$matchAlreadyExistsForThisUser[0]['words'] = $newWords;
-					
-					return $matchAlreadyExistsForThisUser ? Zend_Json::encode(array('match' => $matchAlreadyExistsForThisUser[0])) : "dberror2";
-	
-					}
 				
+				// retrieve coverpic for opponent
+				$dbUser = new Application_Model_DbTable_User();
+				$select5 = $dbUser->getAdapter()->select()->from(array(
+				'user' => 'user'
+				))
+				->where('user.username = ?',$existingUser[0]['username'])
+				;
 				
-				else {
-					$matchAlreadyExistsForThisUser[0]['category'] = 0;
-					$matchAlreadyExistsForThisUser[0]['words'] = $words;
+				$coverpic = $select5->query()->fetchAll();
+				
+				$matchAlreadyExistsForThisUser[0]['category'] = 0;
+				$matchAlreadyExistsForThisUser[0]['coverpic'] = $coverpic[0]['coverpic'];
+				$matchAlreadyExistsForThisUser[0]['profilepic'] = $coverpic[0]['profilepic'];
+				
+				$matchAlreadyExistsForThisUser[0]['words'] = $words;
+				
 					
-					return $matchAlreadyExistsForThisUser ? Zend_Json::encode(array('match' => $matchAlreadyExistsForThisUser[0])) : "dberror2";
-				}
+				return $matchAlreadyExistsForThisUser ? Zend_Json::encode(array('match' => $matchAlreadyExistsForThisUser[0])) : "dberror2";
+				
 			}
 			// no opponent existing, please write back to table and then provide timer to request for maximum 30 secs
 			
