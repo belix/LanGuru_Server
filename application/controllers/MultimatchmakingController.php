@@ -244,10 +244,20 @@ class MultimatchmakingController extends Zend_Controller_Action
 	}
 	
 	public function testAction(){
-			$array['username'] = "Bob Schlund";
-			$test = Application_Model_User::getFriendInfos($array);
+			//$array['username'] = "Bob Schlund";
+			//$test = Application_Model_User::getFriendInfos($array);
 			
-			Zend_Debug::dump($test);
+			$matchdata['score'] = 6;
+			$matchdata['active'] = 2;
+			$matchdata['opponent'] = "opponent2";
+			$matchdata['foreignlang'] = "EN";
+			$matchdata['id'] = 99;
+			$matchdata['nativelang1'] = "DE";
+			$matchdata['nativelang2'] = "DE";
+			
+			
+			
+			//Zend_Debug::dump(Application_Model_Mmatch::finishRound($matchdata));
 			
 		}
 		

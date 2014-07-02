@@ -73,7 +73,7 @@ class Application_Model_Mmatch {
 			$error ++;
 		// END: SAVE FB IDs TO ACTIVEMMATCHES TABLE
 		
-		sendPush($user2[0]['devicetoken'], $username1 . ' fordert dich zu einem Match heraus. Schlund?');
+		//sendPush($user2[0]['devicetoken'], $username1 . ' fordert dich zu einem Match heraus. Schlund?');
 		return $error ? "dberror-requestMatch" : "success";
 	}
 
@@ -210,7 +210,7 @@ class Application_Model_Mmatch {
 		;
 		
 		$result10 = $select->query()->fetchAll();
-		
+
 		if($matchdata['opponent'] == "opponent1") {
 			$data = array(
 				'score1' => $matchdata['score'],
@@ -226,7 +226,7 @@ class Application_Model_Mmatch {
 			
 			$result11 = $select->query()->fetchAll();
 			
-			sendPush($result11[0]['devicetoken'], $result10[0]['opponent1'] . ' hat die Runde beendet. Du bist wieder dran. Schlund?');
+			//sendPush($result11[0]['devicetoken'], $result10[0]['opponent1'] . ' hat die Runde beendet. Du bist wieder dran. Schlund?');
 			
 		}
 		
@@ -244,11 +244,10 @@ class Application_Model_Mmatch {
 			;
 			
 			$result11 = $select->query()->fetchAll();
-			
-			sendPush($result11[0]['devicetoken'], $result10[0]['opponent2'] . ' hat die Runde beendet. Du bist wieder dran. Schlund?');
+
+			//sendPush($result11[0]['devicetoken'], $result10[0]['opponent2'] . ' hat die Runde beendet. Du bist wieder dran. Schlund?');
 			
 		}
-		
 		
 				
 		$where = $db->getAdapter()->quoteInto('id = ?', $matchdata['id']);

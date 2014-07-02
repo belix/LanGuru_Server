@@ -7,14 +7,31 @@ class Application_Model_Matchmaking {
 		$db = new Application_Model_DbTable_Matchmaking();
 		$dbMatch = new Application_Model_DbTable_Match();
 		
+		
+		// check if user crashed game and game is still open
+		if ($userdata['user']['crashedmatches']):
+			$select = $dbMatch->getAdapter()->select()->from(array(
+				'match'
+			),array('id'))
+			->where('match.active = ?', 1)
+			->where('match.id IN ?', $userdata['user']['crashedmatches'])
+			;
+			
+			$crashed = $select->query()->fetchAll();
+		endif;
+		
 		// first check if match already exists because someone else already matched you
 		$select2 = $dbMatch->getAdapter()->select()->from(array(
-		'match' => 'match'
+			'match' => 'match'
 		))
 		->where('match.active = ?', 1)
 		->where('opponent1 = ? OR opponent2 = ?', $userdata['user']['username'], $userdata['user']['username'] )
 		
 		;
+		
+		if ($crashed):
+			$select2->where('match.id NOT IN ?', $crashed);
+		endif;
 		
 		$matchAlreadyExistsForThisUser = $select2->query()->fetchAll();
 					 

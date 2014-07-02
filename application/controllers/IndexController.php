@@ -19,19 +19,9 @@ class IndexController extends Zend_Controller_Action
 			$this->_helper->layout()->disableLayout();
 			$this->_helper->viewRenderer->setNoRender(true);
 
-			$db = new Application_Model_DbTable_User();
-		
-		$select = $db->getAdapter()->select()->from(array(
-			'user' => 'user'
-		))
-		->where('id=?', '13')
-		;
-		
-		$result = $select->query()->fetchAll();
-		
-		Zend_Debug::dump($result[0]);
+			sendPush('694ca97a3461e9f5e3f8031cf6c14205711f83307decf16b84e7cf7710c8595d', 'Hallo fordert dich zu einem Match heraus. Schlund?');
+			
 	}
 
 
 }
-
