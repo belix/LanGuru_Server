@@ -88,7 +88,7 @@ class Application_Model_Mmatch {
 		
 		$select = $db->getAdapter()->select()->from(array(
 			'user' => 'user',
-		), array('id', 'username', 'fbid', 'ranking', 'nativelang', 'foreignlang'))
+		), array('id', 'username', 'fbid', 'ranking', 'nativelang', 'foreignlang', 'coverpic', 'profilepic'))
 		->where('fbid IN(?)', $array['fbids'])
 		;
 									
@@ -97,7 +97,6 @@ class Application_Model_Mmatch {
 		return $result ? Zend_Json::encode(array('userdetails' => $result)) : "dberror-could-not-retrieve-userdetails";
 				
 	}
-
 
 
 	// function to check if there are existing matches for a specific user with the specific status

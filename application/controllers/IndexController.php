@@ -19,8 +19,13 @@ class IndexController extends Zend_Controller_Action
 			$this->_helper->layout()->disableLayout();
 			$this->_helper->viewRenderer->setNoRender(true);
 
-			sendPush('694ca97a3461e9f5e3f8031cf6c14205711f83307decf16b84e7cf7710c8595d', 'Hallo fordert dich zu einem Match heraus. Schlund?');
+
+			$listOfWords = Application_Model_Words::retrieveWordsForMultiplyChoiceGame();
+			Application_Model_Helper::createFileForMatch(999, json_encode($listOfWords), 1);
+			$words = Application_Model_Helper::readFromFile(999, 1);
+			$words = json_decode($words);
 			
+			Zend_Debug::dump($words);
 	}
 
 

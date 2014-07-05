@@ -9,6 +9,7 @@ class Application_Model_Matchmaking {
 		
 		
 		// check if user crashed game and game is still open
+		/*
 		if ($userdata['user']['crashedmatches']):
 			$select = $dbMatch->getAdapter()->select()->from(array(
 				'match'
@@ -19,6 +20,7 @@ class Application_Model_Matchmaking {
 			
 			$crashed = $select->query()->fetchAll();
 		endif;
+		 * */
 		
 		// first check if match already exists because someone else already matched you
 		$select2 = $dbMatch->getAdapter()->select()->from(array(
@@ -28,11 +30,11 @@ class Application_Model_Matchmaking {
 		->where('opponent1 = ? OR opponent2 = ?', $userdata['user']['username'], $userdata['user']['username'] )
 		
 		;
-		
+		/*
 		if ($crashed):
 			$select2->where('match.id NOT IN ?', $crashed);
 		endif;
-		
+		*/
 		$matchAlreadyExistsForThisUser = $select2->query()->fetchAll();
 					 
 		if($matchAlreadyExistsForThisUser) {
@@ -42,24 +44,9 @@ class Application_Model_Matchmaking {
 			// logic for creating the list of words
 			
 				// first retrieve list of words depending on the gametype
-				switch ($matchAlreadyExistsForThisUser[0]['gametype']) {
-					case 1:
-						$listOfWords = Application_Model_Words::retrieveWordsForMultiplyChoiceGame();
-						break;
-						
-					case 2:
-						$listOfWords = Application_Model_Words::retrieveWordsForWordCompletion($matchAlreadyExistsForThisUser[0]['foreignlang'], $matchAlreadyExistsForThisUser[0]['nativelang1'], $matchAlreadyExistsForThisUser[0]['nativelang2']);
-						break;
-						
-					case 3:
-						$listOfWords = Application_Model_Words::retrieveWordsForMatrixGame($matchAlreadyExistsForThisUser[0]['foreignlang'], $matchAlreadyExistsForThisUser[0]['nativelang1'], $matchAlreadyExistsForThisUser[0]['nativelang2']);
-						break;
-						
-					default:
-							
-						break;
-				}
-
+				
+				$listOfWords = Application_Model_Words::retrieveWordsForMultiplyChoiceGame();
+					
 				// TO DO: then write back the words to file, so both players get the same words
 				Application_Model_Helper::createFileForMatch($matchAlreadyExistsForThisUser[0]['id'], json_encode($listOfWords), 1);
 
@@ -157,23 +144,9 @@ class Application_Model_Matchmaking {
 					// logic for creating the list of words
 				
 					// first retrieve list of words depending on gametype
-					switch ($matchAlreadyExistsForThisUser[0]['gametype']) {
-						case 1:
-							$listOfWords = Application_Model_Words::retrieveWordsForMultiplyChoiceGame();
-							break;
+					
+					$listOfWords = Application_Model_Words::retrieveWordsForMultiplyChoiceGame();
 							
-						case 2:
-							$listOfWords = Application_Model_Words::retrieveWordsForWordCompletion($matchAlreadyExistsForThisUser[0]['foreignlang'], $matchAlreadyExistsForThisUser[0]['nativelang1'], $matchAlreadyExistsForThisUser[0]['nativelang2']);
-							break;
-							
-						case 3:
-							$listOfWords = Application_Model_Words::retrieveWordsForMatrixGame($matchAlreadyExistsForThisUser[0]['foreignlang'], $matchAlreadyExistsForThisUser[0]['nativelang1'], $matchAlreadyExistsForThisUser[0]['nativelang2']);
-							break;
-						
-						default:
-							
-							break;
-					}
 					
 					
 					// TO DO: then write back the words to file, so both players get the same words

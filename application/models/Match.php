@@ -35,7 +35,6 @@ class Application_Model_Match {
 		$row->ranking2 = $userRanking2[0]['ranking'];
 		$row->aborted = 0;
 		$row->active = 1;
-		$row->gametype = $gametype;
 
 		if (!$row->save())
 			$error ++;
