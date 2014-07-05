@@ -183,6 +183,29 @@ class MatchmakingController extends Zend_Controller_Action
 		}
 	}
 	
+	public function rankingAction() {
+		$request = $this->getRequest();
+			
+			
+		if ($request->isPost()) {
+			// get the json raw data
+			$handle = fopen("php://input", "rb");
+			$http_raw_post_data = '';
+			
+			while (!feof($handle)) {
+			    $http_raw_post_data .= fread($handle, 8192);
+			}
+			fclose($handle); 
+			
+			// convert it to a php array
+			$json_data = json_decode($http_raw_post_data, true);
+			
+			$result = Application_Model_User::getOverallRanking($json_data);
+			
+			echo $result;
+		}
+	}
+	
 	public function testAction() {
 
 		//$test = Application_Model_Words::retrieveWordsForMatrixGame('EN', 'DE', 'DE');

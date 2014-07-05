@@ -217,6 +217,54 @@ class Application_Model_User {
 		if (!$row->save())
 			$error ++;
 	}
+
+	public static function getOverallRanking($data) {
+		$db = new Application_Model_DbTable_User();
+		
+			// get top N users
+			$select = $db->getAdapter()->select()->from(array(
+				'user' => 'user',
+			), array('id', 'username', 'ranking', 'profilepic'))
+			->order('ranking DESC')
+			->limit(3,0)
+			;
+									
+			$result = $select->query()->fetchAll();
+			
+			// get "urself"
+			$select2 = $db->getAdapter()->select()->from(array(
+				'user' => 'user',
+			), array('id', 'username', 'ranking', 'profilepic'))
+			->where('id=?', $data['id'])
+			;
+									
+			$result2 = $select2->query()->fetchAll();
+			$userRanking = $result2[0]['ranking'];
+			
+			// get the next one below "urself"
+			$select3 = $db->getAdapter()->select()->from(array(
+				'user' => 'user',
+			), array('id', 'username', 'ranking', 'profilepic'))
+			->where('ranking=(SELECT MAX(ranking) FROM user WHERE ranking < ?)', $userRanking)
+			->limit(1,0)
+			;
+			
+			$result3 = $select3->query()->fetchAll();
+			
+			// get the next one above "urself"
+			$select4 = $db->getAdapter()->select()->from(array(
+				'user' => 'user',
+			), array('id', 'username', 'ranking', 'profilepic'))
+			->where('ranking=(SELECT MAX(ranking) FROM user WHERE ranking > ?)', $userRanking)
+			->limit(1,0)
+			;
+			
+			$result4 = $select4->query()->fetchAll();
+			$combinedResult = array();
+			$combinedResult = array_merge($result, $result4, $result2, $result3 );
+		
+		return $combinedResult ? Zend_Json::encode(array('ranking' => $combinedResult)) : "dberror-could-not-retrieve-overall-ranking";
+	}
 }
 
 ?>
