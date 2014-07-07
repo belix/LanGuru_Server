@@ -155,6 +155,29 @@ class MatchmakingController extends Zend_Controller_Action
 	
 	}
 	
+	public function abortOrDeclineFriendMatchRequestAction() {
+		$request = $this->getRequest();
+			
+			
+		if ($request->isPost()) {
+			// get the json raw data
+			$handle = fopen("php://input", "rb");
+			$http_raw_post_data = '';
+			
+			while (!feof($handle)) {
+			    $http_raw_post_data .= fread($handle, 8192);
+			}
+			fclose($handle); 
+			
+			// convert it to a php array
+			$json_data = json_decode($http_raw_post_data, true);
+			
+			$error = Application_Model_Matchmaking::abortOrDeclineFriendMatchRequest($json_data);
+			
+			
+		}
+	}
+	
 	
 	// this method should be called when the game is over 
 	public function closeMatchAction(){

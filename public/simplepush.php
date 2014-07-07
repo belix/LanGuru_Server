@@ -134,7 +134,7 @@ $fp = stream_socket_client(
 if (!$fp)
 	exit("Failed to connect: $err $errstr" . PHP_EOL);
 
-echo 'Connected to APNS' . PHP_EOL;
+//echo 'Connected to APNS' . PHP_EOL;
 
 // Create the payload body
 $body['aps'] = array(
@@ -151,10 +151,10 @@ $msg = chr(0) . pack('n', 32) . pack('H*', $deviceToken) . pack('n', strlen($pay
 // Send it to the server
 $result = fwrite($fp, $msg, strlen($msg));
 
-if (!$result)
-	echo 'Message not delivered' . PHP_EOL;
-else
-	echo 'Message successfully delivered' . PHP_EOL;
+//if (!$result)
+	//echo 'Message not delivered' . PHP_EOL;
+//else
+	//echo 'Message successfully delivered' . PHP_EOL;
 
 // Close the connection to the server
 fclose($fp);

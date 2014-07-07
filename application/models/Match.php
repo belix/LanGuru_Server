@@ -41,6 +41,49 @@ class Application_Model_Match {
 		
 		return $error ? false : true;
 	}
+
+	public function createFriendMatch($challengerId, $accepterId) {
+		$db = new Application_Model_DbTable_Match();
+		$dbUser = new Application_Model_DbTable_User();
+		
+		// get rankings of both users and write back to match table 
+		$select = $dbUser->getAdapter()->select()->from(array(
+		'user' => 'user'
+		))
+		->where('id = ?', $challengerId)
+		;
+		
+		$select2 = $dbUser->getAdapter()->select()->from(array(
+		'user' => 'user'
+		))
+		->where('id = ?', $accepterId)
+		;
+		
+		$userData1 = $select->query()->fetchAll();
+		$userData2 = $select2->query()->fetchAll();
+		
+		
+		$row = $db->createRow();
+		
+		$row->opponent1 = $userData1[0]['username'];
+		$row->nativelang1 = $userData1[0]['nativelang'];
+		$row->opponent2 = $userData2[0]['username'];
+		$row->nativelang2 = $userData2[0]['nativelang'];
+		$row->foreignlang = $userData1[0]['foreignlang'];
+		$row->ranking1 = $userData1[0]['ranking'];
+		$row->ranking2 = $userData2[0]['ranking'];
+		$row->aborted = 0;
+		$row->active = 1;
+
+		if (!($matchId = $row->save()))
+			$error ++;
+		
+		$listOfWords = Application_Model_Words::retrieveWordsForMultiplyChoiceGame();
+		// TO DO: then write back the words to file, so both players get the same words
+		Application_Model_Helper::createFileForMatch($matchId, json_encode($listOfWords), 1);
+		
+		return $error ? false : $matchId;
+	}
 	
 	
 	public static function finishMatch($matchdata) {

@@ -270,16 +270,16 @@ class Application_Model_Matchmaking {
 		if($accepterData[0]['foreignlang'] == $challengerData[0]['foreignlang']) {
 			// allowed to challenge friend (validation success)
 			$row = $db->createRow();
-						
+			$row->matchId = 0;			
 			$row->challengerId = $data['challengerId'];
 			$row->accepterId = $data['accepterId'];
 			$row->status = 0;
 	
-			if (!($matchId = $row->save()))
+			if (!($matchmakingId = $row->save()))
 				$error ++;
 			
 			$match = array();
-			$match[0]['matchId'] = $matchId;
+			$match[0]['requestId'] = $matchmakingId;
 			
 			sendPush($accepterData[0]['devicetoken'], $challengerData[0]['username'] . " hat dich herausgefordert! Bock Schlund?");
 			
@@ -294,14 +294,117 @@ class Application_Model_Matchmaking {
 	}
 
 	public static function pingFriendChallengeRequest($data) {
+		$db = new Application_Model_DbTable_MatchmakingFriends();
+		$dbUser = new Application_Model_DbTable_User();
+		$dbMatch = new Application_Model_DbTable_Match();
 		
+		$select = $db->getAdapter()->select()->from(array(
+			'matchmakingFriends' => 'matchmakingFriends'
+		),array('challengerId', 'accepterId'))
+		->where('id=?', $data['requestId']);
+		;
+		
+		$matchmakingData = $select->query()->fetchAll();
+		
+		// check if match is still existing
+		if(!$matchmakingData[0]['challengerId'])
+			return "match was aborted";
+			
 		// accepter is sending the ping
 		if($data['accepterId']) {
+
+			// create match
+			$matchId = Application_Model_Match::createFriendMatch($matchmakingData[0]['challengerId'], $matchmakingData[0]['accepterId']);
+			$words = Application_Model_Helper::readFromFile($matchId, 1);
+			$words = json_decode($words);
+				
+			// update matchmakingFriends Entry for requestId
+			$updateData = array(
+			'matchId' => $matchId,
+			'status' => 1
+			);
+				
+			$where = $db->getAdapter()->quoteInto('id = ?', $data['requestId']);
+			if(!$db->update($updateData, $where))
+				$error++;					
 			
-		}
+			
+			// retrieve match (need to be sent back to device)
+			$select = $dbMatch->getAdapter()->select()->from(array(
+				'match' => 'match'
+			))
+			->where('id=?', $matchId);
+			;
+			
+			$matchData = $select->query()->fetchAll();
+			
+			// retrieve coverpic for opponent
+			$dbUser = new Application_Model_DbTable_User();
+			$select = $dbUser->getAdapter()->select()->from(array(
+			'user' => 'user'
+			), array('coverpic', 'profilepic'))
+			->where('id = ?', $matchmakingData[0]['challengerId'])
+			;
+			
+			$challengerUserPics = $select->query()->fetchAll();
+			
+			$matchData[0]['category'] = 0;
+			$matchData[0]['coverpic'] = $challengerUserPics[0]['coverpic'];
+			$matchData[0]['profilepic'] = $challengerUserPics[0]['profilepic'];
+			
+			$matchData[0]['words'] = $words;
+			
+				
+			return Zend_Json::encode(array('match' => $matchData[0]));
+	}
 			
 		else {
 			
+			// check the status of matchmaking entry
+			$select = $db->getAdapter()->select()->from(array(
+			'matchmakingFriends' => 'matchmakingFriends'), array('matchId','status')
+			)
+			->where('id=?', $data['requestId']);
+			
+			$matchStatus = $select->query()->fetchAll();
+			
+			if($matchStatus[0]['status'] == 1) {
+				$words = Application_Model_Helper::readFromFile($matchStatus[0]['matchId'], 1);
+				$words = json_decode($words);
+				
+				// retrieve match (need to be sent back to device)
+				$select = $dbMatch->getAdapter()->select()->from(array(
+					'match' => 'match'
+				))
+				->where('id=?', $matchStatus[0]['matchId']);
+				;
+				
+				$matchData = $select->query()->fetchAll();
+				
+				// retrieve coverpic for opponent
+				$dbUser = new Application_Model_DbTable_User();
+				$select = $dbUser->getAdapter()->select()->from(array(
+				'user' => 'user'
+				), array('coverpic', 'profilepic'))
+				->where('id = ?', $matchmakingData[0]['accepterId'])
+				;
+				
+				$accepterUserPics = $select->query()->fetchAll();
+				
+				$matchData[0]['category'] = 0;
+				$matchData[0]['coverpic'] = $accepterUserPics[0]['coverpic'];
+				$matchData[0]['profilepic'] = $accepterUserPics[0]['profilepic'];
+				
+				$matchData[0]['words'] = $words;
+				
+				// remove matchmaking request 
+				self::removeRequestIdFromMatchmaking($data['requestId']);	
+				return Zend_Json::encode(array('match' => $matchData[0]));
+			}
+			
+			else {
+				return "waiting for accepter";
+			}
 		}
 	}
 	
@@ -313,29 +416,50 @@ class Application_Model_Matchmaking {
 		$select = $db->getAdapter()->select()->from(array(
 			'matchmakingFriends' => 'matchmakingFriends'
 		),array('id', 'challengerId'))
-		->where('challengerId=?', $data['accepterId'])
-		->orWhere('accepterId=?', $data['accepterId'])
+		->where('accepterId=?', $data['accepterId'])
 		;
 		
 		$matchmakingId = $select->query()->fetchAll();
 		
-		$select = $dbUser->getAdapter()->select()->from(array(
-			'user' => 'user'
-		), array('username'))
-		->where('id=?', $matchmakingId[0]['challengerId'])
-		;
+		if($matchmakingId[0]['challengerId']) {
+			$select = $dbUser->getAdapter()->select()->from(array(
+				'user' => 'user'
+			), array('username'))
+			->where('id=?', $matchmakingId[0]['challengerId'])
+			;
+			
+			$challengerUsername = $select->query()->fetchAll();
+			
+			$matchmakingData = array();
+			$matchmakingData[0]['requestId'] = $matchmakingId[0]['id'];
+			$matchmakingData[0]['challengerUsername'] = $challengerUsername[0]['username'];
+			
+			return $matchmakingId ? Zend_Json::encode(array('friendMatchRequest' => $matchmakingData[0])) : "match does not exist";
+		}
 		
-		$challengerUsername = $select->query()->fetchAll();
-		
-		$matchmakingData = array();
-		$matchmakingData[0]['matchId'] = $matchmakingId[0]['id'];
-		$matchmakingData[0]['challengerUsername'] = $challengerUsername[0]['username'];
+		else {
+			return "match does not exist";
+		}
 		
 		
-		
-		return $matchmakingId ? Zend_Json::encode(array('friendMatchRequest' => $matchmakingData[0])) : "match does not exist";
 	}
 	
+	public static function abortOrDeclineFriendMatchRequest($data) {
+		$db = new Application_Model_DbTable_MatchmakingFriends();
+		
+		$where = $db->getAdapter()->quoteInto('id=?',$data['requestId']);
+	      if (!$db->delete($where))
+	          $error ++;
+	}
+	
+	
+	public static function removeRequestIdFromMatchmaking($requestId) {
+		$db = new Application_Model_DbTable_MatchmakingFriends();
+		
+		$where = $db->getAdapter()->quoteInto('id=?',$requestId);
+	      if (!$db->delete($where))
+	          $error ++;
+	}	
 	
 	public static function removePlayerFromMatchmaking($user) {
 		
