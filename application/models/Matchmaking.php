@@ -229,6 +229,114 @@ class Application_Model_Matchmaking {
 		
 	}
 
+	public static function challengeFriend($data) {
+		$db = new Application_Model_DbTable_MatchmakingFriends();
+		$dbUser = new Application_Model_DbTable_User();
+		
+		// check if accepterId has no entry in DB (if there is an entry, you cannot challenge)
+		
+		$select = $db->getAdapter()->select()->from(array(
+			'matchmakingFriends' => 'matchmakingFriends'
+		), array('id'))
+		->where('accepterId=?', $data['accepterId']);
+		
+		$idExists = $select->query()->fetchAll();
+		
+		// not possible to challenge
+		if($idExists[0]['id']) 
+			return "not possible to challenge";
+		
+		// check if challenging is allowed (foreignlanguage needs to be the same)
+		
+		// get accepterData (token and foreignlanguage)
+		$select = $dbUser->getAdapter()->select()->from(array(
+			'user' => 'user'
+		), array('devicetoken', 'foreignlang'))
+		->where('id=?', $data['accepterId'])
+		;
+		
+		$accepterData = $select->query()->fetchAll();
+		
+		// get challengerData (foreignlanguage and username)
+		$select = $dbUser->getAdapter()->select()->from(array(
+			'user' => 'user'
+		), array('foreignlang','username'))
+		->where('id=?', $data['challengerId'])
+		;
+		
+		$challengerData = $select->query()->fetchAll();
+		
+		// same foreign languages (if so, challenging is allowed)
+		if($accepterData[0]['foreignlang'] == $challengerData[0]['foreignlang']) {
+			// allowed to challenge friend (validation success)
+			$row = $db->createRow();
+						
+			$row->challengerId = $data['challengerId'];
+			$row->accepterId = $data['accepterId'];
+			$row->status = 0;
+	
+			if (!($matchId = $row->save()))
+				$error ++;
+			
+			$match = array();
+			$match[0]['matchId'] = $matchId;
+			
+			sendPush($accepterData[0]['devicetoken'], $challengerData[0]['username'] . " hat dich herausgefordert! Bock Schlund?");
+			
+			return $error ? "could not save challenge request" : Zend_Json::encode(array('friendMatchRequest' => $match[0])); 
+		}
+		
+		else {
+			return "different foreign languages";
+		}
+		
+		
+	}
+
+	public static function pingFriendChallengeRequest($data) {
+		
+		// accepter is sending the ping
+		if($data['accepterId']) {
+			
+		}
+			
+		else {
+			
+		}
+	}
+	
+	public static function friendMatchMakingExists($data) {
+		$db = new Application_Model_DbTable_MatchmakingFriends();
+		$dbUser = new Application_Model_DbTable_User();
+		
+		// check if user exists in matchmaking
+		$select = $db->getAdapter()->select()->from(array(
+			'matchmakingFriends' => 'matchmakingFriends'
+		),array('id', 'challengerId'))
+		->where('challengerId=?', $data['accepterId'])
+		->orWhere('accepterId=?', $data['accepterId'])
+		;
+		
+		$matchmakingId = $select->query()->fetchAll();
+		
+		$select = $dbUser->getAdapter()->select()->from(array(
+			'user' => 'user'
+		), array('username'))
+		->where('id=?', $matchmakingId[0]['challengerId'])
+		;
+		
+		$challengerUsername = $select->query()->fetchAll();
+		
+		$matchmakingData = array();
+		$matchmakingData[0]['matchId'] = $matchmakingId[0]['id'];
+		$matchmakingData[0]['challengerUsername'] = $challengerUsername[0]['username'];
+		
+		
+		
+		return $matchmakingId ? Zend_Json::encode(array('friendMatchRequest' => $matchmakingData[0])) : "match does not exist";
+	}
+	
+	
 	public static function removePlayerFromMatchmaking($user) {
 		
 		$SEMKey = "123456";

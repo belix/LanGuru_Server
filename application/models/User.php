@@ -221,50 +221,53 @@ class Application_Model_User {
 	public static function getOverallRanking($data) {
 		$db = new Application_Model_DbTable_User();
 		
-			// get top N users
-			$select = $db->getAdapter()->select()->from(array(
-				'user' => 'user',
-			), array('id', 'username', 'ranking', 'profilepic'))
-			->order('ranking DESC')
-			->limit(3,0)
-			;
-									
-			$result = $select->query()->fetchAll();
+		$db = Zend_Db_Table::getDefaultAdapter();
+        $db->setFetchMode(Zend_Db::FETCH_ASSOC);
 			
-			// get "urself"
-			$select2 = $db->getAdapter()->select()->from(array(
-				'user' => 'user',
-			), array('id', 'username', 'ranking', 'profilepic'))
-			->where('id=?', $data['id'])
-			;
-									
-			$result2 = $select2->query()->fetchAll();
-			$userRanking = $result2[0]['ranking'];
-			
-			// get the next one below "urself"
-			$select3 = $db->getAdapter()->select()->from(array(
-				'user' => 'user',
-			), array('id', 'username', 'ranking', 'profilepic'))
-			->where('ranking=(SELECT MAX(ranking) FROM user WHERE ranking < ?)', $userRanking)
-			->limit(1,0)
-			;
-			
-			$result3 = $select3->query()->fetchAll();
-			
-			// get the next one above "urself"
-			$select4 = $db->getAdapter()->select()->from(array(
-				'user' => 'user',
-			), array('id', 'username', 'ranking', 'profilepic'))
-			->where('ranking=(SELECT MAX(ranking) FROM user WHERE ranking > ?)', $userRanking)
-			->limit(1,0)
-			;
-			
-			$result4 = $select4->query()->fetchAll();
-			$combinedResult = array();
-			$combinedResult = array_merge($result, $result4, $result2, $result3 );
-		
-		return $combinedResult ? Zend_Json::encode(array('ranking' => $combinedResult)) : "dberror-could-not-retrieve-overall-ranking";
+			$db->query("SET @rank = 0 ;");
+
+			$result = $db->fetchAll("SELECT @rank := @rank+1 AS rank, id FROM user ORDER BY ranking DESC LIMIT 0,5;");
+					
+			// check if id is in top 5 array
+			$isTopFour = false;
+			foreach ($result as $key => $value) {
+				if ($value['id'] == $data['id']) $isTopFour = true; 
+			}
+					
+			// if is in top 5 return top 6
+			if ($isTopFour) {
+				$db->query("SET @rank = 0 ;");
+				$result = $db->fetchAll("SELECT @rank := @rank+1 AS rank, id, ranking, username, profilepic FROM user ORDER BY ranking DESC LIMIT 0,6;");
+				
+				return $result ? Zend_Json::encode(array('ranking' => $result)) : "dberror-could-not-retrieve-overall-ranking";
+				
+			// get top 3 and people before and after oneself
+			} else {
+				// fetch top 3
+				$db->query("SET @rank = 0 ;");
+				$result = $db->fetchAll("SELECT @rank := @rank+1 AS rank, id, ranking, username, profilepic FROM user ORDER BY ranking DESC LIMIT 0,3;");
+				
+				// get oneself
+				$db->query("SET @rank = 0 ;");
+				$result2 = $db->fetchAll("SELECT @rank := @rank+1 AS rank, id, ranking, username, profilepic FROM user ORDER BY ranking DESC;");
+				
+				$self = array();
+				foreach ($result2 as $key => $value) {
+					if ($value['id'] == $data['id']):
+						$self[0] = $result2[$key-1]; 
+						$self[1] = $result2[$key];
+						// if user is not last in ranking, then add the person after him
+						if ($result2[$key+1]) $self[2] = $result2[$key+1];
+					endif;
+				}
+				
+				$final = array_merge($result,$self);
+				
+				return $final ? Zend_Json::encode(array('ranking' => $final)) : "dberror-could-not-retrieve-overall-ranking";
+								
+			}
 	}
+
 }
 
 ?>

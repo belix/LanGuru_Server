@@ -18,9 +18,40 @@ class IndexController extends Zend_Controller_Action
 				
 			$this->_helper->layout()->disableLayout();
 			$this->_helper->viewRenderer->setNoRender(true);
+			
+			$db = new Application_Model_DbTable_MatchmakingFriends();
+		$dbUser = new Application_Model_DbTable_User();
+		
+		
+		// allowed to challenge friend (validation success)
+		$row = $db->createRow();
+					
+		$row->challengerId = 37;
+		$row->accepterId = 40;
+		$row->status = 0;
 
-
-			$db = new Application_Model_DbTable_User();
+		if (!$row->save())
+			$error ++;
+		
+		// challenge initiated, send push to accepter
+		
+		// get accepterDeviceID
+		$select = $dbUser->getAdapter()->select()->from(array(
+			'user' => 'user'
+		), array('devicetoken'))
+		->where('id=?', 40)
+		
+		;
+		
+		$accepterDeviceToken = $select->query()->fetchAll();
+		//sendPush($accepterDeviceToken[0], "blablabla hat dich herausgefordert! Bock?");
+		
+			Zend_Debug::dump($accepterDeviceToken);
+			//sendPush('4277a42fbe0852cb521631a7da1220758bbccbbb0e0bd10a6f391d13a1267c74', 'FRISS POWPEL JUNGE');
+			//$data['id'] = 37; 
+			//Application_Model_User::getOverallRanking($data);
+			
+			/*$db = new Application_Model_DbTable_User();
 		
 			$select = $db->getAdapter()->select()->from(array(
 				'user' => 'user',
@@ -61,7 +92,7 @@ class IndexController extends Zend_Controller_Action
 			$combinedResult = array();
 			$combinedResult = array_merge($result, $result4, $result2, $result3 );
 			
-			Zend_Debug::dump($combinedResult);
+			Zend_Debug::dump($combinedResult);*/
 	}
 
 

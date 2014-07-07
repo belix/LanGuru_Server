@@ -62,6 +62,74 @@ class MatchmakingController extends Zend_Controller_Action
 		sem_release($seg);
 	}
 	
+	public function challengeFriendAction() {
+		$request = $this->getRequest();
+			
+			
+		if ($request->isPost()) {
+			// get the json raw data
+			$handle = fopen("php://input", "rb");
+			$http_raw_post_data = '';
+			
+			while (!feof($handle)) {
+			    $http_raw_post_data .= fread($handle, 8192);
+			}
+			fclose($handle); 
+			
+			// convert it to a php array
+			$json_data = json_decode($http_raw_post_data, true);
+					
+			$challenge = Application_Model_Matchmaking::challengeFriend($json_data);
+			
+			echo $challenge;
+		}
+	}
+	
+	public function friendMatchmakingExistsAction() {
+		$request = $this->getRequest();
+			
+			
+		if ($request->isPost()) {
+			// get the json raw data
+			$handle = fopen("php://input", "rb");
+			$http_raw_post_data = '';
+			
+			while (!feof($handle)) {
+			    $http_raw_post_data .= fread($handle, 8192);
+			}
+			fclose($handle); 
+			
+			// convert it to a php array
+			$json_data = json_decode($http_raw_post_data, true);
+					
+			$challenge = Application_Model_Matchmaking::friendMatchmakingExists($json_data);
+			
+			echo $challenge;
+		}
+	}
+	
+	public function pingFriendChallengeRequestAction() {
+		$request = $this->getRequest();
+			
+			
+		if ($request->isPost()) {
+			// get the json raw data
+			$handle = fopen("php://input", "rb");
+			$http_raw_post_data = '';
+			
+			while (!feof($handle)) {
+			    $http_raw_post_data .= fread($handle, 8192);
+			}
+			fclose($handle); 
+			
+			// convert it to a php array
+			$json_data = json_decode($http_raw_post_data, true);
+					
+			$challenge = Application_Model_Matchmaking::pingFriendChallengeRequest($json_data);
+			
+			echo $challenge;
+		}
+	}
 	// function to send all the data to finish a match like score, winner etc.
 	public function finishMatchAction() {
 		$request = $this->getRequest();
