@@ -415,7 +415,7 @@ class Application_Model_Matchmaking {
 		// check if user exists in matchmaking
 		$select = $db->getAdapter()->select()->from(array(
 			'matchmakingFriends' => 'matchmakingFriends'
-		),array('id', 'challengerId'))
+		),array('id', 'challengerId', 'status'))
 		->where('accepterId=?', $data['accepterId'])
 		;
 		
@@ -433,6 +433,7 @@ class Application_Model_Matchmaking {
 			$matchmakingData = array();
 			$matchmakingData[0]['requestId'] = $matchmakingId[0]['id'];
 			$matchmakingData[0]['challengerUsername'] = $challengerUsername[0]['username'];
+			$matchmakingData[0]['status'] = $matchmakingId[0]['status'];
 			
 			return $matchmakingId ? Zend_Json::encode(array('friendMatchRequest' => $matchmakingData[0])) : "match does not exist";
 		}
@@ -445,11 +446,8 @@ class Application_Model_Matchmaking {
 	}
 	
 	public static function abortOrDeclineFriendMatchRequest($data) {
-		$db = new Application_Model_DbTable_MatchmakingFriends();
 		
-		$where = $db->getAdapter()->quoteInto('id=?',$data['requestId']);
-	      if (!$db->delete($where))
-	          $error ++;
+		self::abortOrDeclineFriendMatchRequest($data['requestId']);
 	}
 	
 	
@@ -459,6 +457,7 @@ class Application_Model_Matchmaking {
 		$where = $db->getAdapter()->quoteInto('id=?',$requestId);
 	      if (!$db->delete($where))
 	          $error ++;
+		return $error ? "could not delete the matchmaking request" : "matchmaking request deleted successfully";
 	}	
 	
 	public static function removePlayerFromMatchmaking($user) {

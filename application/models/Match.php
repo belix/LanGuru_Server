@@ -376,7 +376,7 @@ class Application_Model_Match {
 				Application_Model_Match::finishMatch($match);
 			} else {
 				$score = $scores[0]['score2'];
-				echo Zend_Json::encode(array('match' => array('score2' => $score)));
+				echo Zend_Json::encode(array('match' => array('opponentScore' => $score)));
 			}
 		else:
 			$data = array(
@@ -408,7 +408,7 @@ class Application_Model_Match {
 				Application_Model_Match::finishMatch($match);
 			} else {
 				$score = $scores[0]['score1'];
-				echo Zend_Json::encode(array('match' => array('score1' => $score)));
+				echo Zend_Json::encode(array('match' => array('opponentScore' => $score)));
 			}
 		endif;
 		
